@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import {
   Card,
   CardHeader,
@@ -9,31 +10,40 @@ import {
 import { listType } from '../propTypes';
 import ListItem from './ListItem';
 
-const List = ({ list, items, onListItemUpdate }) => (
-  <Card>
-    <CardHeader title={list.name} />
-    <CardText>
-      <UIList>
-        {
-          list
-            .items
-            .map(item => (
-              <ListItem
-                key={item.id}
-                item={items[item.id]}
-                onListItemUpdate={onListItemUpdate}
-              />
-            ))
-        }
-      </UIList>
-    </CardText>
-  </Card>
-);
+class List extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.listId !== nextProps.listId;
+  }
+
+  render() {
+    return (
+      <Card>
+        <CardHeader title={this.props.list.name} />
+        <CardText>
+          <UIList>
+            {
+              this.props
+                .list
+                .items
+                .map(item => (
+                  <ListItem
+                    key={item.id}
+                    itemId={item.id}
+                  />
+                ))
+            }
+          </UIList>
+        </CardText>
+      </Card>
+    );
+  }
+}
 
 List.propTypes = {
-  list:             listType.isRequired,
-  items:            PropTypes.shape().isRequired,
-  onListItemUpdate: PropTypes.func.isRequired,
+  listId: PropTypes.string.isRequired,
+  list:   listType.isRequired,
 };
 
-export default List;
+export default connect(
+  (state, ownProps) => ({ list: state.lists[ownProps.listId] }),
+)(List);

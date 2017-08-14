@@ -1,82 +1,45 @@
 /* global performance */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
 import { connect } from 'react-redux';
 import {
   Card,
   CardText,
   CardHeader,
 } from 'material-ui';
-import { updateListItem } from '../actions';
 import NextItem from './NextItem';
 import List from './List';
 
 class ListPanel extends Component {
-  constructor() {
-    super();
-
-    this.onListItemUpdate = this.onListItemUpdate.bind(this);
-  }
-
-  onListItemUpdate(itemId, newData) {
-    this.props.dispatch(updateListItem({
-      itemId,
-      ...newData,
-    }));
+  shouldComponentUpdate(nextProps) {
+    return !isEqual(this.props.listIds, nextProps.listIds);
   }
 
   render() {
-    performance.mark('ListPanel start');
-
-    const output = (
+    return (
       <div>
-        <NextItem
-          item={this.props.items[this.props.nextToExpire]}
-          onListItemUpdate={this.onListItemUpdate}
-        />
+        <NextItem />
         <Card>
           <CardHeader title="Your lists" />
           <CardText>
-            {Object.keys(this.props.lists).map(listId => (
+            {this.props.listIds.map(listId => (
               <List
                 key={listId}
-                list={this.props.lists[listId]}
-                items={this.props.items}
-                onListItemUpdate={this.onListItemUpdate}
+                listId={listId}
               />
             ))}
           </CardText>
         </Card>
       </div>
     );
-
-    performance.mark('ListPanel end');
-    performance.measure(
-      'ListPanel rendered',
-      'ListPanel start',
-      'ListPanel end',
-    );
-
-    const measures = performance.getEntriesByName('ListPanel rendered');
-
-    console.log(measures[0].duration);
-
-    performance.clearMarks();
-    performance.clearMeasures();
-
-    return output;
   }
 }
 
-ListPanel.defaultProps = {
-  nextToExpire: null,
-};
-
 ListPanel.propTypes = {
-  dispatch:     PropTypes.func.isRequired,
-  lists:        PropTypes.shape().isRequired,
-  items:        PropTypes.shape().isRequired,
-  nextToExpire: PropTypes.string,
+  listIds: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default connect(state => state)(ListPanel);
+export default connect(state => ({
+  listIds: Object.keys(state.lists),
+}))(ListPanel);

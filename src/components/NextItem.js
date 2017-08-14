@@ -1,25 +1,40 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import {
   Card,
   CardHeader,
   CardText,
 } from 'material-ui';
-import { itemType } from '../propTypes';
 import ListItem from './ListItem';
 
-const NextItem = ({ item, onListItemUpdate }) => (
-  <Card>
-    <CardHeader title="Next item up" />
-    <CardText>
-      <ListItem item={item} onListItemUpdate={onListItemUpdate} />
-    </CardText>
-  </Card>
-);
+class NextItem extends Component {
+  shouldComponentUpdate(nextProps) {
+    return this.props.nextToExpire !== nextProps.nextToExpire;
+  }
 
-NextItem.propTypes = {
-  item:             itemType.isRequired,
-  onListItemUpdate: PropTypes.func.isRequired,
+  render() {
+    if (!this.props.nextToExpire) {
+      return null;
+    }
+
+    return (
+      <Card>
+        <CardHeader title="Next item up" />
+        <CardText>
+          <ListItem itemId={this.props.nextToExpire} />
+        </CardText>
+      </Card>
+    );
+  }
+}
+
+NextItem.defaultProps = {
+  nextToExpire: null,
 };
 
-export default NextItem;
+NextItem.propTypes = {
+  nextToExpire: PropTypes.string,
+};
+
+export default connect(({ nextToExpire }) => ({ nextToExpire }))(NextItem);
