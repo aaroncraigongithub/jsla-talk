@@ -1,7 +1,7 @@
 import React from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { AppBar } from 'material-ui';
+import { AppBar, Paper } from 'material-ui';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import reducer from './reducers';
@@ -14,10 +14,10 @@ const store = createStore(reducer);
 const App = () => (
   <Provider store={store}>
     <MuiThemeProvider>
-      <div>
+      <Paper>
         <AppBar title="A demo app for js.la" />
         <ListPanel />
-      </div>
+      </Paper>
     </MuiThemeProvider>
   </Provider>
 );
