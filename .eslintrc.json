@@ -1,7 +1,12 @@
 {
   "extends": [
-    "react-app"
+    "airbnb"
   ],
+  "globals": {
+    "performance": false,
+    "document": false,
+    "window": false
+  },
   "plugins": [
     "react",
     "jsx-a11y",
